@@ -68,4 +68,10 @@ npm run build
 - 字段、状态、动作与流转目标集中在 `frontend/src/data/modules.ts`；示例数据在
   `frontend/src/data/seed.ts`。
 - 状态流转只允许在 `local-service.ts` 里改，页面组件不做业务判断。
-- 想回到初始数据：清掉浏览器里 `hydrology-monitor-station:entries` 这一项，或调用 `resetModule(模块)`。
+- 遥测设备页可按「所属站点、设备类型、通讯方式、电池余量」筛选并生成当天准备队列：
+  筛选条件与最近维护记录冲突时**以最近维护记录为准**（近 30 天已维护的设备不入队，页面列明原因）；
+  旧设备缺通讯方式时沿用站点的「默认通讯方式」。队列按 日期+管理单位 保存，维护员不能改外单位队列；
+  保存时通讯系统的更换工单同步生成（通讯系统页「申请更换」等其它入口也走同一创建点，不重单）。
+- 设备页筛选条件持久化在 `hydrology-monitor-station:filters`，返回页面自动恢复。
+- 想回到初始数据：清掉浏览器里 `hydrology-monitor-station:entries` 这一项，或调用 `resetModule(模块)`；
+  准备队列单独存在 `hydrology-monitor-station:prep-queues`。
