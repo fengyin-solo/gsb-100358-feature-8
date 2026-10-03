@@ -57,3 +57,35 @@ export function resetRows(key: string): EntryRow[] {
 export function storageKey(): string {
   return STORAGE_KEY
 }
+
+// 维护准备队列、通讯更换工单不套用业务模块的字段模型，单独按 JSON 文档存取。
+function readDocument<T>(key: string, fallback: T): T {
+  if (typeof window === 'undefined' || !window.localStorage) {
+    return clone(fallback)
+  }
+  const raw = window.localStorage.getItem(key)
+  if (!raw) {
+    window.localStorage.setItem(key, JSON.stringify(fallback))
+    return clone(fallback)
+  }
+  try {
+    return JSON.parse(raw) as T
+  } catch {
+    window.localStorage.setItem(key, JSON.stringify(fallback))
+    return clone(fallback)
+  }
+}
+
+function writeDocument<T>(key: string, value: T): void {
+  if (typeof window !== 'undefined' && window.localStorage) {
+    window.localStorage.setItem(key, JSON.stringify(value))
+  }
+}
+
+export function loadDocument<T>(key: string, fallback: T): T {
+  return readDocument(key, fallback)
+}
+
+export function persistDocument<T>(key: string, value: T): void {
+  writeDocument(key, value)
+}
